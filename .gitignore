@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+backend/.venv/
+
+# Node
+frontend/node_modules/
+frontend/.next/
+legacy/
+# Env files
+backend/.env
+frontend/.env.local
+.coral-config/
+.claude
+# OS/editor
+.DS_Store
+Thumbs.db
+scripts/

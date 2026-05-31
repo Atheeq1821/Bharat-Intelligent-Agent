@@ -1,0 +1,60 @@
+name: bharat-intelligence
+
+services:
+  coral:
+    build:
+      context: .
+      dockerfile: coral/Dockerfile
+    working_dir: /workspace
+    tty: true
+    stdin_open: true
+    environment:
+      CORAL_CONFIG_DIR: /coral-config
+    volumes:
+      - ./:/workspace
+      - coral_config:/coral-config
+      - "${USERPROFILE}/.codex:/root/.codex:ro"
+      - "${USERPROFILE}/.claude:/root/.claude:ro"
+    command: bash -lc "coral --version && sleep infinity"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    working_dir: /app/backend
+    depends_on:
+      - coral
+    env_file:
+      - ./backend/.env
+    environment:
+      CORAL_CONFIG_DIR: /coral-config
+      CORAL_EXECUTABLE: coral
+      FRONTEND_ORIGIN: http://localhost:3000
+    volumes:
+      - ./backend:/app/backend
+      - coral_config:/coral-config
+      - "${USERPROFILE}/.codex:/root/.codex:ro"
+      - "${USERPROFILE}/.claude:/root/.claude:ro"
+    ports:
+      - "8000:8000"
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    working_dir: /app/frontend
+    depends_on:
+      - backend
+    environment:
+      BACKEND_URL: http://backend:8000
+    volumes:
+      - ./frontend:/app/frontend
+      - frontend_node_modules:/app/frontend/node_modules
+    ports:
+      - "3000:3000"
+    command: sh -lc "npm install --no-audit --no-fund && npm run dev -- --hostname 0.0.0.0 --port 3000"
+
+volumes:
+  coral_config:
+  frontend_node_modules:

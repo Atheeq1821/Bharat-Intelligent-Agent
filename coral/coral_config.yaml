@@ -1,0 +1,25 @@
+# Coral setup notes (Docker-first)
+#
+# This file is documentation only. Coral runtime state is stored in:
+#   volume: coral_config
+#   path in container: /coral-config
+#
+# 1) Start Coral utility container:
+#      docker compose up -d coral
+#
+# 2) Run guided source setup from container:
+#      docker compose run --rm coral coral onboard
+#
+# 3) Or use the repo helper script:
+#      docker compose run --rm coral setup-coral-sources
+#
+# 4) Validate:
+#      docker compose run --rm coral coral source list
+#      docker compose run --rm coral coral sql "SELECT schema_name, table_name FROM coral.tables ORDER BY 1,2"
+#
+# Notes:
+# - `zoho_books.yaml` is a custom source in this repo.
+# - `slack` is bundled and can be added interactively.
+# - Coral v0.4.x bundled sources do not include `postgresql`, so this project's
+#   historical "postgresql.*" queries are legacy until a PostgreSQL source
+#   spec is added.
